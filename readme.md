@@ -10,7 +10,7 @@
 You can run this project locally by
 
 - Copy the contents of .env.example to a .env file
-- Run `yarn dev` or `yarn container` to run in docker mode
+- Run `yarn start` or `yarn container` to run in docker mode
 
 The project runs on port `4310` i.e `http://localhost:4310`
 

@@ -12,7 +12,7 @@ services:
       - .env
     depends_on:
       - mongo
-    command: sh -c "/wait && yarn dev"
+    command: sh -c "/wait && yarn start"
   mongo:
     image: mongo
     volumes:
