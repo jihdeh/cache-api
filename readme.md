@@ -13,3 +13,10 @@ You can run this project locally by
 - Run `yarn dev` or `yarn container` to run in docker mode
 
 The project runs on port `4310` i.e `http://localhost:4310`
+
+Note: When running in docker mode, check the mongo url.
+`localhost` or `127.0.0.1` should be replaced with `mongo`
+
+```
+# DEV_DATABASE_URL=mongodb://mongo:27017/errandlr
+```
