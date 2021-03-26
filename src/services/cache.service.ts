@@ -7,6 +7,7 @@ import httpStatus from 'http-status';
 const twentyFourhrs = 60 * 60 * 24 * 1000;
 const ttl = config.ttl || twentyFourhrs;
 const maxCacheSize = config.maxCacheSize || 5;
+const randomString = () => nanoid();
 
 type ToptionalString = string | undefined;
 
@@ -14,6 +15,11 @@ export const getAll = async () => {
   const cacheCollection = getCollection().cache;
   const cacheResults = await cacheCollection.find({}).toArray();
   return cacheResults;
+
+  /** Q:
+   * when getting all data, would it be necessary to check through
+   * each record and reset any expired cache?
+   **/
 };
 
 export const deleteAll = () => {
@@ -28,8 +34,6 @@ const cacheExpired = ({
   return Boolean(Date.now() - date.getTime() >= 1000 * ttl);
 };
 
-const randomString = () => nanoid();
-
 const newCachePayload = (key = randomString(), data: ToptionalString = randomString()) => {
   return {
     key,
@@ -42,6 +46,7 @@ const newCachePayload = (key = randomString(), data: ToptionalString = randomStr
 export const createCache = async (key: ToptionalString, data: ToptionalString) => {
   const cacheCollection = getCollection().cache;
   const record = newCachePayload(key, data);
+  await lruMechanise();
   let response = await cacheCollection.insertOne(record);
 
   return response.ops[0];
@@ -54,12 +59,13 @@ const retriveCacheCondtion = async function (key: string) {
     console.log('Cache hit');
     if (cacheExpired(cache)) {
       await cacheCollection.deleteOne({ key });
-      return createCache(key, cache.data);
+      return createCache(key, undefined);
     }
     return cache;
   } else {
     console.log('Cache miss');
-    return createCache(key, undefined);
+    const createNewCache = await createCache(key, undefined);
+    return createNewCache.data;
   }
 };
 
@@ -69,6 +75,7 @@ export const getCache = (key: string) => {
 
 /**
  * Filter and update cache by LRU - least recently used mechanism
+ * This works by deleting the oldest entry in the cache collection
  */
 const lruMechanise = async () => {
   const cacheCollection = getCollection().cache;
@@ -89,7 +96,13 @@ export const upsertCache = async (key: string, data: string) => {
     const cacheCollection = getCollection().cache;
     const record = newCachePayload(key, data);
     await lruMechanise();
+
+    /* if a record isn't found, we should just create a new record for the key */
     await cacheCollection.updateOne({ key }, { $set: record }, { upsert: true });
+    /** Q:
+     * Would we want to reset the ttl for an expired record when trying to update it?
+     */
+
     return getCacheRecord(key);
   } catch (err) {
     throw new ApiError(httpStatus.BAD_REQUEST, err);

@@ -1,0 +1,21 @@
+version: '3'
+services:
+  fashion-cloud:
+    build: .
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - WAIT_HOSTS=mongo:27017
+      - WAIT_SLEEP_INTERVAL=5
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+    command: sh -c "/wait && yarn dev"
+  mongo:
+    image: mongo
+    volumes:
+      - ./data:/data/db
+    ports:
+      - '27017:27017'
