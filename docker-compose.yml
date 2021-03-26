@@ -1,20 +1,10 @@
 version: '3'
-
 services:
   fashion-cloud:
     build: .
-    image: fashion-cloud
-    ports:
-      - '3000:3000'
+    env_file:
+      - .env
     volumes:
-      - .:/usr/src/fashion-cloud
-      - fash_node_modules:/usr/src/fashion-cloud/node_modules
-    networks:
-      - node-network
-
-networks:
-  node-network:
-    driver: bridge
-
-volumes:
-  fash_node_modules:
+      - .:/app
+    ports:
+      - '4310:4310'

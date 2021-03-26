@@ -1,8 +1,13 @@
 FROM node:14
 
-# Create app directory
-ADD . /usr/src/fashion-cloud
-WORKDIR /usr/src/fashion-cloud
+RUN mkdir /app
+WORKDIR /app
 
-# Install app dependencies
-RUN yarn
+ADD package.json yarn.lock /app/
+
+RUN yarn --pure-lockfile
+
+ADD . /app
+
+ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.7.3/wait /wait
+RUN chmod +x /wait
