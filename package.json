@@ -1,0 +1,16 @@
+{
+  "name": "cache-challenge-fash",
+  "version": "1.0.0",
+  "description": "Code challenge for fashion cloud",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "cache",
+    "api",
+    "challenege"
+  ],
+  "author": "Jide",
+  "license": "ISC"
+}
