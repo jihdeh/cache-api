@@ -20,3 +20,8 @@ Note: When running in docker mode, check the mongo url.
 ```
 # DEV_DATABASE_URL=mongodb://mongo:27017/errandlr
 ```
+
+### Test
+
+RUN `yarn test`
+Note: To run test outside of docker, make sure the mongo url isn't pointing to the docker mongo url.
